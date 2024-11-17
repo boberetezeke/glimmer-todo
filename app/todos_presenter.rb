@@ -2,7 +2,7 @@ require 'yaml'
 require_relative 'todo_model'
 require_relative 'todos_model'
 
-class TodoPresenter
+class TodosPresenter
   attr_reader :new_todo
 
   TODOS_FN = "/Users/stevetuckner/todos.yaml"

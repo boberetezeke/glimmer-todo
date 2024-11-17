@@ -1,6 +1,6 @@
 require 'glimmer-dsl-libui'
 
-class TodoView
+class TodosView
   include Glimmer
 
   def initialize(presenter)
@@ -13,7 +13,7 @@ class TodoView
   end
 
   def todo_window
-    window do
+    window("Todos", 600, 400) do
       margined true
 
       vertical_box do
@@ -26,14 +26,12 @@ class TodoView
 
   def todo_entry_form
     form do
+      stretchy false
       entry do
-        stretchy false
         label 'Todo'
         text <=> [@presenter.new_todo, :text]
       end
       date_picker do
-        stretchy false
-
         time year: 2004, mon: 11, mday: 17
       end
     end
@@ -54,12 +52,12 @@ class TodoView
   end
 
   def todo_table
-    table {
+    table do
       text_column('Text')
       text_column('Due Date')
 
       editable true
       cell_rows <=> [@presenter, :todos]
-    }
+    end
   end
 end

@@ -1,13 +1,13 @@
 require 'glimmer-dsl-libui'
-require_relative 'todo_presenter'
-require_relative 'todo_view'
+require_relative 'todos_presenter'
+require_relative 'todos_view'
 
 class TodoApp
   include Glimmer
 
   def initialize
-    @presenter = TodoPresenter.new
-    @view = TodoView.new(@presenter)
+    @presenter = TodosPresenter.new
+    @view = TodosView.new(@presenter)
   end
 
   def launch
