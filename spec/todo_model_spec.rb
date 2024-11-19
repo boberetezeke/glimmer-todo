@@ -18,13 +18,14 @@ describe TodoModel do
   describe '.deserialize' do
     it 'deserializes correctly without due_date' do
       todo = described_class.deserialize({ text: 'do something', due_date: nil })
-      subject.due_date = nil
-      expect(subject).to eq(todo)
+      expect(todo.text).to eq('do something')
+      expect(todo.due_date).to be_nil
     end
 
     it 'deserializes correctly with due_date' do
       todo = described_class.deserialize({ text: 'do something', due_date: '2024-03-01' })
-      expect(subject).to eq(todo)
+      expect(todo.text).to eq('do something')
+      expect(todo.due_date).to eq(Date.new(2024,3,1))
     end
   end
 end

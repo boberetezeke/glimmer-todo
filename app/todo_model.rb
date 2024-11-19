@@ -11,12 +11,6 @@ class TodoModel
     true
   end
 
-  def ==(other)
-    return false unless other.is_a?(self.class)
-
-    @text = other.text && @due_date == other.due_date
-  end
-
   def serialize
     {
       text: @text,
