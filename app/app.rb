@@ -6,7 +6,7 @@ class TodoApp
   include Glimmer
 
   def initialize
-    @presenter = TodosPresenter.new
+    @presenter = TodosPresenter.new(Time.now.to_date)
     @view = TodosView.new(@presenter)
   end
 

@@ -31,8 +31,19 @@ class TodosView
         label 'Todo'
         text <=> [@presenter.new_todo, :text]
       end
-      date_picker do
-        time year: 2004, mon: 11, mday: 17
+      horizontal_box do
+        combobox do
+          items <=> [@presenter, :date_names]
+          selected <=> [@presenter, :selected_date_name_index, after_write: ->(val) { @presenter.after_selected_date_name_index_write(val) }]
+        end
+        date_picker do
+          time <=> [
+            @presenter,
+            :new_due_date_hash,
+            on_read: ->(val){ @presenter.before_due_date_read(val) },
+            on_write: ->(val) { @presenter.after_due_date_write(val) }
+          ]
+        end
       end
     end
   end

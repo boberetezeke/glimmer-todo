@@ -7,6 +7,11 @@ class TodoModel
     @due_date = due_date
   end
 
+  def reset
+    self.text = ''
+    self.due_date = nil
+  end
+
   def valid?
     true
   end
