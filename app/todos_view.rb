@@ -48,10 +48,10 @@ class TodosView
       stretchy false
 
       on_clicked do
-        if @presenter.new_todo.valid?
+        if @presenter.valid?
           @presenter.save_todo
         else
-          msg_box_error('Validation Error!', @presenter.new_todo.errors)
+          msg_box_error('Validation Error!', @presenter.errors)
         end
       end
     end

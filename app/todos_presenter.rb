@@ -3,6 +3,8 @@ require_relative 'todo_model'
 require_relative 'todos_model'
 
 class DateProxy
+  attr_accessor :date_hash
+
   def initialize(date, presenter, hash_sym)
     @date = date
     @presenter = presenter
@@ -20,13 +22,14 @@ class DateProxy
   end
 
   def update_date_hash(date)
-    @presenter.send("#{@hash_sym}=", to_dash_hash(date))
+    @date_hash = to_dash_hash(date)
+    # @presenter.send("#{@hash_sym}=", to_dash_hash(date))
   end
 
   def binding_array
     [
-      @presenter,
-      @hash_sym,
+      self,
+      :date_hash,
       on_read: ->(val){ before_due_date_read(val) },
       on_write: ->(val) { after_due_date_write(val) }
     ]
@@ -96,11 +99,6 @@ class DateNameSelect
 end
 
 class TodosPresenter
-  attr_reader :new_todo
-  attr_accessor :date_names_array
-  attr_accessor :new_due_date_hash
-  attr_accessor :selected_date_name_index_value
-
   TODOS_FN = "/Users/stevetuckner/todos.yaml"
 
   def initialize(start_date)
@@ -137,6 +135,14 @@ class TodosPresenter
 
   def after_selected_date_name_index_write(index)
     puts "@selected_date_name_index; #{@selected_date_name_index_value}"
+  end
+
+  def valid?
+    @new_todo.valid?
+  end
+
+  def errors
+    @new_todo.errors
   end
 
   def todos
