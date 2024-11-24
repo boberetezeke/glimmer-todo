@@ -4,19 +4,44 @@ require_relative 'todos_model'
 
 class TodosPresenter
   attr_reader :new_todo
+  attr_accessor :date_names_array
   attr_accessor :new_due_date_hash
-  attr_accessor :date_names
-  attr_accessor :selected_date_name_index
+  attr_accessor :selected_date_name_index_value
 
   TODOS_FN = "/Users/stevetuckner/todos.yaml"
 
   def initialize(start_date)
     @new_todo = TodoModel.new('', due_date: start_date)
     @new_due_date_hash = {}
-    @date_names = [
+    @date_names_array = [
       'Today', 'Tommorrow', 'Custom']
-    @selected_date_name_index = 0
+    @selected_date_name_index_value = 0
     load_todos
+  end
+
+  def todo_text
+    [@new_todo, :text]
+  end
+
+  def date_names
+    [self, :date_names_array]
+  end
+
+  def selected_date_name_index
+    [
+      self,
+      :selected_date_name_index_value,
+      after_write: ->(val) { after_selected_date_name_index_write(val) }
+    ]
+  end
+
+  def due_date
+    [
+      self,
+      :new_due_date_hash,
+      on_read: ->(val){ before_due_date_read(val) },
+      on_write: ->(val) { after_due_date_write(val) }
+    ]
   end
 
   def before_due_date_read(val)
@@ -28,7 +53,7 @@ class TodosPresenter
   end
 
   def after_selected_date_name_index_write(index)
-    puts "@selected_date_name_index; #{@selected_date_name_index}"
+    puts "@selected_date_name_index; #{@selected_date_name_index_value}"
   end
 
   def todos
