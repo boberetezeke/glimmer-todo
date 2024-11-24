@@ -2,6 +2,42 @@ require 'yaml'
 require_relative 'todo_model'
 require_relative 'todos_model'
 
+class DateProxy
+  def initialize(date, presenter, hash_sym, &update_date)
+    presenter.send("#{hash_sym}=", to_dash_hash(date))
+    @date = date
+    @presenter = presenter
+    @hash_sym = hash_sym
+    @update_date = update_date
+  end
+
+  def binding_array
+    [
+      @presenter,
+      @hash_sym,
+      on_read: ->(val){ before_due_date_read(val) },
+      on_write: ->(val) { after_due_date_write(val) }
+    ]
+  end
+
+  def before_due_date_read(val)
+    @date ? to_dash_hash(@date) : {}
+  end
+
+  def after_due_date_write(date_hash)
+    @date = to_date(date_hash)
+    @update_date.call(@date)
+  end
+
+  def to_date(date_hash)
+    Date.new(date_hash[:year], date_hash[:mon], date_hash[:mday])
+  end
+
+  def to_dash_hash(date)
+    { mday: date.mday, year: date.year, mon: date.mon }
+  end
+end
+
 class TodosPresenter
   attr_reader :new_todo
   attr_accessor :date_names_array
@@ -13,6 +49,7 @@ class TodosPresenter
   def initialize(start_date)
     @new_todo = TodoModel.new('', due_date: start_date)
     @new_due_date_hash = {}
+    @due_date_proxy = DateProxy.new(start_date, self, :new_due_date_hash) { |date| @new_todo.due_date = date }
     @date_names_array = [
       'Today', 'Tommorrow', 'Custom']
     @selected_date_name_index_value = 0
@@ -36,20 +73,7 @@ class TodosPresenter
   end
 
   def due_date
-    [
-      self,
-      :new_due_date_hash,
-      on_read: ->(val){ before_due_date_read(val) },
-      on_write: ->(val) { after_due_date_write(val) }
-    ]
-  end
-
-  def before_due_date_read(val)
-    new_todo.due_date ? { mday: @new_todo.due_date.mday, year: @new_todo.due_date.year, mon: @new_todo.due_date.mon } : {}
-  end
-
-  def after_due_date_write(date_hash)
-    @new_todo.due_date = Date.new(date_hash[:year], date_hash[:mon], date_hash[:mday])
+    @due_date_proxy.binding_array
   end
 
   def after_selected_date_name_index_write(index)
